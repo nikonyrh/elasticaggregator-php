@@ -1,0 +1,6 @@
+{
+    "name": "NikoNyrh/ElasticAggregator",
+    "autoload": {
+        "psr-4": {"NikoNyrh\\": "src/NikoNyrh"}
+    }
+}

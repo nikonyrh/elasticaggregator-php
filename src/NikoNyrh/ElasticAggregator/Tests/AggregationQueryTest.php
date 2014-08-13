@@ -20,10 +20,10 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 		// - group posts by date and
 		// - calculate stats on post lengths
 		$result = $this->query()
-			->aggregate('terms', 'users')
+			->aggregate('terms', 'user')
 			->aggregate('date_histogram', array(
 				'field'         => 'post_date',
-				'interval'      => '1d',
+				'interval'      => '60d',
 				'min_doc_count' => 1
 			))
 			->stats('post_length')
@@ -33,23 +33,21 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 			{
 				"size": 0,
 				"aggs": {
-					"users_agg": {
+					"user_agg": {
 						"terms": {
-							"field": "users"
+							"field": "user"
 						},
 						"aggs": {
 							"post_date_agg": {
 								"date_histogram": {
 									"field": "post_date",
-									"interval": "1d",
+									"interval": "60d",
 									"min_doc_count": 1
 								},
 								"aggs": {
-									"stats": {
-										"post_length_stats": {
-											"stats": {
-												"field": "post_length"
-											}
+									"post_length_stats": {
+										"stats": {
+											"field": "post_length"
 										}
 									}
 								}
@@ -72,7 +70,7 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 				'interval'        => 25,
 				'extended_bounds' => array(
 					'min' => 0,
-					'max' => 100
+					'max' => 250
 				)
 			))
 			->aggregate('filter', array(
@@ -82,7 +80,8 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 			))
 			->stats(array(
 				array('type' => 'max', 'field' => 'post_length'),
-				array('type' => 'avg', 'field' => 'num_of_tags')))
+				array('type' => 'avg', 'field' => 'num_of_tags')
+			))
 			->buildBody();
 		
 		$this->assertEquals($this->decode('
@@ -96,7 +95,7 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 							"min_doc_count": 0,
 							"extended_bounds": {
 								"min": 0,
-								"max": 100
+								"max": 250
 							}
 						},
 						"aggs": {
@@ -107,16 +106,14 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 									}
 								},
 								"aggs": {
-									"stats": {
-										"post_length_max": {
-											"max": {
-												"field": "post_length"
-											}
-										},
-										"num_of_tags_avg": {
-											"avg": {
-												"field": "num_of_tags"
-											}
+									"post_length_max": {
+										"max": {
+											"field": "post_length"
+										}
+									},
+									"num_of_tags_avg": {
+										"avg": {
+											"field": "num_of_tags"
 										}
 									}
 								}
@@ -140,18 +137,18 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 			))
 			->filter('range', array(
 				'field'     => 'post_length',
-				'condition' => array('gt' => 50)
+				'condition' => array('lt' => 50)
 			))
-			->aggregate('terms', 'users')
+			->aggregate('terms', 'user')
 			->buildBody();
 		
 		$this->assertEquals($this->decode('
 			{
 				"size": 0,
 				"aggs": {
-					"users_agg": {
+					"user_agg": {
 						"terms": {
-							"field": "users"
+							"field": "user"
 						}
 					}
 				},
@@ -172,7 +169,7 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 								{
 									"range": {
 										"post_length": {
-											"gt": 50
+											"lt": 50
 										}
 									}
 								}
@@ -205,16 +202,29 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					)
 				)
 			))
-			->aggregate('terms', 'users')
+			->aggregate('terms', 'user')
+			->stats(array('post_length', 'num_of_tags'))
 			->buildBody();
 		
 		$this->assertEquals($this->decode('
 			{
 				"size": 0,
 				"aggs": {
-					"users_agg": {
+					"user_agg": {
 						"terms": {
-							"field": "users"
+							"field": "user"
+						},
+						"aggs": {
+							"post_length_stats": {
+								"stats": {
+									"field": "post_length"
+								}
+							},
+							"num_of_tags_stats": {
+								"stats": {
+									"field": "num_of_tags"
+								}
+							}
 						}
 					}
 				},
@@ -253,29 +263,31 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 				'type'      => 'prefix',
 				'condition' => array('url' => 'www.google.com/')
 			))
+			// An example custom aggregation: the first parameter
+			// is an array and no 2nd parameter is needed.
 			->aggregate(array(
-				'field' => 'user',
+				'name' => 'no_tag',
 				'aggs'  => array(
 					'missing' => array(
-						'field' => 'link'
+						'field' => 'tag'
 					)
 				)
 			))
-			->aggregate('terms', 'users')
+			->aggregate('terms', 'user')
 			->buildBody();
 		
 		$this->assertEquals($this->decode('
 			{
 				"size": 0,
 				"aggs": {
-					"user_agg": {
+					"no_tag_agg": {
 						"missing": {
-							"field": "link"
+							"field": "tag"
 						},
 						"aggs": {
-							"users_agg": {
+							"user_agg": {
 								"terms": {
-									"field": "users"
+									"field": "user"
 								}
 							}
 						}

@@ -94,7 +94,7 @@ class AggregationQuery
 		$i = sizeof($this->aggregates) + 1;
 		
 		if (is_array($type)) {
-			$this->aggregates[$type['field'] . "_agg_$i"] = $type['aggs'];
+			$this->aggregates[$type['name'] . "_agg_$i"] = $type['aggs'];
 		}
 		elseif ($type == 'terms') {
 			$this->aggregates[$config . "_agg_$i"] = array(
@@ -148,6 +148,7 @@ class AggregationQuery
 		$stats = array();
 		
 		foreach ($fields as $field) {
+			$i = sizeof($this->aggregates) + 1;
 			if (is_array($field)) {
 				$stats[$field['field'] . '_' . $field['type']] = array(
 					$field['type'] => array('field' => $field['field'])
@@ -160,8 +161,7 @@ class AggregationQuery
 			}
 		}
 		
-		$i = sizeof($this->aggregates) + 1;
-		$this->aggregates["stats_$i"] = $stats;
+		$this->aggregates["_merged_$i"] = $stats;
 		
 		return $this;
 	}
@@ -181,6 +181,10 @@ class AggregationQuery
 				$agg = $this->aggregates[$key];
 				$agg['aggs'] = $aggs;
 				$aggs = array($aggKey => $agg);
+			}
+			
+			if ($aggKey == '_merged') {
+				$aggs = $aggs[$aggKey];
 			}
 		}
 		

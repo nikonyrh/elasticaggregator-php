@@ -6,16 +6,26 @@ require __DIR__ . '/../../../../vendor/autoload.php';
 class AggregationQueryRegressionTest
 {
 	protected $client;
+	protected $index;
 	
-	public function __construct($esClient) {
+	public function __construct(
+		$esClient,
+		$index = '.elastic_aggregator_test'
+	) {
 		$this->client = $esClient;
+		$this->index  = $index;
 	}
 	
-	public function run($index = '.elastic_aggregator_test')
+	public function getIndex()
 	{
-		$this->deleteIndex($index);   // Delete previous index,
-		$this->createIndex($index);   // re-create it (in case mapping has changed)
-		$this->populateIndex($index); // and generate pseudorandom data
+		return $this->index;
+	}
+	
+	public function run()
+	{
+		$this->deleteIndex();               // Delete previous index,
+		$this->createIndex($this->index);   // re-create it (in case mapping has changed)
+		$this->populateIndex($this->index); // and generate pseudorandom data
 		
 		// Get example plain-text queries from unit tests reference output
 		$queries = $this->loadQueries(
@@ -31,7 +41,7 @@ class AggregationQueryRegressionTest
 		// Execute each query and store the result
 		foreach ($queries as $i => $query) {
 			$response = $this->client->search(array(
-				'index' => $index,
+				'index' => $this->index,
 				'type'  => 'post',
 				'body'  => $query
 			));
@@ -44,9 +54,6 @@ class AggregationQueryRegressionTest
 				), JSON_PRETTY_PRINT)
 			);
 		}
-		
-		// Clean-up (optional)
-		$this->deleteIndex($index);
 	}
 	
 	protected function loadQueries($fname)
@@ -66,11 +73,13 @@ class AggregationQueryRegressionTest
 		return $queries;
 	}
 	
-	protected function deleteIndex($index)
+	public function deleteIndex()
 	{
 		// Return the success indicator, not that we really care.
 		try {
-			$this->client->indices()->delete(array('index' => $index));
+			$this->client->indices()->delete(array(
+				'index' => $this->index
+			));
 			return true;
 		}
 		catch (\Exception $e) {
@@ -178,12 +187,57 @@ if (!isset($argv[1])) {
 	die(sprintf("Usage: php %s localhost:9200\n", basename(__FILE__)));
 }
 
-$test = new AggregationQueryRegressionTest(
-	new \Elasticsearch\Client(
-		array(
-			'hosts' => array($argv[1]),
-		)
-	)
+// Populate the data
+$client = new \Elasticsearch\Client(array(
+	'hosts' => array($argv[1]),
+));
+
+$test = new AggregationQueryRegressionTest($client);
+$test->run();
+
+// Test aggregation
+$aggregator = new \NikoNyrh\ElasticAggregator\Aggregator(
+	$client,
+	array('index' => $test->getIndex())
 );
 
-$test->run();
+$result = $aggregator
+	->aggregate('terms', 'user')
+	->stats('post_length')
+	->exec('post');
+
+/*
+	$result is something like:
+	
+	Array
+	(
+		[User 4] => Array
+			(
+				[post_length] => Array
+					(
+						[count] => 25
+						[min] => 34
+						[max] => 193
+						[avg] => 109.44
+						[sum] => 2736
+					)
+
+			)
+
+		[User 2] => Array
+			(
+				[post_length] => Array
+					(
+						[count] => 22
+						[min] => 31
+						[max] => 199
+						[avg] => 121.5
+						[sum] => 2673
+					)
+
+			)
+	)
+*/
+
+// Clean up
+$test->deleteIndex();

@@ -94,7 +94,7 @@ class AggregationQuery
 		$i = sizeof($this->aggregates) + 1;
 		
 		if (is_array($type)) {
-			$this->aggregates[$type['name'] . "_agg_$i"] = $type['aggs'];
+			$this->aggregates[$type['name'] . "_$i"] = $type['aggs'];
 		}
 		elseif ($type == 'terms') {
 			$this->aggregates[$config . "_agg_$i"] = array(

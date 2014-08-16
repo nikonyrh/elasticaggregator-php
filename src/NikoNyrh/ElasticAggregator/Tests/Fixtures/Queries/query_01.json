@@ -1,0 +1,285 @@
+{
+	"name":     "users_and_post_dates",
+	"response": {
+		"took": 2,
+		"timed_out": false,
+		"_shards": {
+			"total": 1,
+			"successful": 1,
+			"failed": 0
+		},
+		"hits": {
+			"total": 100,
+			"max_score": 0,
+			"hits": []
+		},
+		"aggregations": {
+			"user_agg": {
+				"buckets": [
+					{
+						"key": "User 4",
+						"doc_count": 25,
+						"post_date_agg": {
+							"buckets": [
+								{
+									"key_as_string": "20131111",
+									"key": 1384128000000,
+									"doc_count": 5,
+									"post_length_stats": {
+										"count": 5,
+										"min": 34,
+										"max": 94,
+										"avg": 61.4,
+										"sum": 307
+									}
+								},
+								{
+									"key_as_string": "20140110",
+									"key": 1389312000000,
+									"doc_count": 20,
+									"post_length_stats": {
+										"count": 20,
+										"min": 37,
+										"max": 193,
+										"avg": 121.45,
+										"sum": 2429
+									}
+								}
+							]
+						}
+					},
+					{
+						"key": "User 2",
+						"doc_count": 22,
+						"post_date_agg": {
+							"buckets": [
+								{
+									"key_as_string": "20131111",
+									"key": 1384128000000,
+									"doc_count": 4,
+									"post_length_stats": {
+										"count": 4,
+										"min": 31,
+										"max": 183,
+										"avg": 105,
+										"sum": 420
+									}
+								},
+								{
+									"key_as_string": "20140110",
+									"key": 1389312000000,
+									"doc_count": 18,
+									"post_length_stats": {
+										"count": 18,
+										"min": 37,
+										"max": 199,
+										"avg": 125.16666666667,
+										"sum": 2253
+									}
+								}
+							]
+						}
+					},
+					{
+						"key": "User 1",
+						"doc_count": 19,
+						"post_date_agg": {
+							"buckets": [
+								{
+									"key_as_string": "20131111",
+									"key": 1384128000000,
+									"doc_count": 3,
+									"post_length_stats": {
+										"count": 3,
+										"min": 39,
+										"max": 148,
+										"avg": 84.333333333333,
+										"sum": 253
+									}
+								},
+								{
+									"key_as_string": "20140110",
+									"key": 1389312000000,
+									"doc_count": 16,
+									"post_length_stats": {
+										"count": 16,
+										"min": 30,
+										"max": 183,
+										"avg": 82.625,
+										"sum": 1322
+									}
+								}
+							]
+						}
+					},
+					{
+						"key": "User 3",
+						"doc_count": 19,
+						"post_date_agg": {
+							"buckets": [
+								{
+									"key_as_string": "20131111",
+									"key": 1384128000000,
+									"doc_count": 5,
+									"post_length_stats": {
+										"count": 5,
+										"min": 55,
+										"max": 199,
+										"avg": 133.8,
+										"sum": 669
+									}
+								},
+								{
+									"key_as_string": "20140110",
+									"key": 1389312000000,
+									"doc_count": 14,
+									"post_length_stats": {
+										"count": 14,
+										"min": 34,
+										"max": 193,
+										"avg": 115.78571428571,
+										"sum": 1621
+									}
+								}
+							]
+						}
+					},
+					{
+						"key": "User 5",
+						"doc_count": 15,
+						"post_date_agg": {
+							"buckets": [
+								{
+									"key_as_string": "20131111",
+									"key": 1384128000000,
+									"doc_count": 2,
+									"post_length_stats": {
+										"count": 2,
+										"min": 79,
+										"max": 115,
+										"avg": 97,
+										"sum": 194
+									}
+								},
+								{
+									"key_as_string": "20140110",
+									"key": 1389312000000,
+									"doc_count": 13,
+									"post_length_stats": {
+										"count": 13,
+										"min": 58,
+										"max": 183,
+										"avg": 103,
+										"sum": 1339
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	},
+	"expected": {
+		"User 4": {
+			"2013-11-11 00:00:00": {
+				"post_length": {
+					"count": 5,
+					"min": 34,
+					"max": 94,
+					"avg": 61.4,
+					"sum": 307
+				}
+			},
+			"2014-01-10 00:00:00": {
+				"post_length": {
+					"count": 20,
+					"min": 37,
+					"max": 193,
+					"avg": 121.45,
+					"sum": 2429
+				}
+			}
+		},
+		"User 2": {
+			"2013-11-11 00:00:00": {
+				"post_length": {
+					"count": 4,
+					"min": 31,
+					"max": 183,
+					"avg": 105,
+					"sum": 420
+				}
+			},
+			"2014-01-10 00:00:00": {
+				"post_length": {
+					"count": 18,
+					"min": 37,
+					"max": 199,
+					"avg": 125.16666666667,
+					"sum": 2253
+				}
+			}
+		},
+		"User 1": {
+			"2013-11-11 00:00:00": {
+				"post_length": {
+					"count": 3,
+					"min": 39,
+					"max": 148,
+					"avg": 84.333333333333,
+					"sum": 253
+				}
+			},
+			"2014-01-10 00:00:00": {
+				"post_length": {
+					"count": 16,
+					"min": 30,
+					"max": 183,
+					"avg": 82.625,
+					"sum": 1322
+				}
+			}
+		},
+		"User 3": {
+			"2013-11-11 00:00:00": {
+				"post_length": {
+					"count": 5,
+					"min": 55,
+					"max": 199,
+					"avg": 133.8,
+					"sum": 669
+				}
+			},
+			"2014-01-10 00:00:00": {
+				"post_length": {
+					"count": 14,
+					"min": 34,
+					"max": 193,
+					"avg": 115.78571428571,
+					"sum": 1621
+				}
+			}
+		},
+		"User 5": {
+			"2013-11-11 00:00:00": {
+				"post_length": {
+					"count": 2,
+					"min": 79,
+					"max": 115,
+					"avg": 97,
+					"sum": 194
+				}
+			},
+			"2014-01-10 00:00:00": {
+				"post_length": {
+					"count": 13,
+					"min": 58,
+					"max": 183,
+					"avg": 103,
+					"sum": 1339
+				}
+			}
+		}
+	}
+}

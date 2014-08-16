@@ -79,8 +79,8 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 				'condition' => 'ES'
 			))
 			->stats(array(
-				array('type' => 'max', 'field' => 'post_length'),
-				array('type' => 'avg', 'field' => 'num_of_tags')
+				array('type' => 'avg', 'field' => 'num_of_tags'),
+				array('type' => 'max', 'field' => 'num_of_tags')
 			))
 			->buildBody();
 		
@@ -106,13 +106,13 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 									}
 								},
 								"aggs": {
-									"post_length_max": {
-										"max": {
-											"field": "post_length"
-										}
-									},
 									"num_of_tags_avg": {
 										"avg": {
+											"field": "num_of_tags"
+										}
+									},
+									"num_of_tags_max": {
+										"max": {
 											"field": "num_of_tags"
 										}
 									}
@@ -280,7 +280,7 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 			{
 				"size": 0,
 				"aggs": {
-					"no_tag_agg": {
+					"no_tag": {
 						"missing": {
 							"field": "tag"
 						},
@@ -324,6 +324,6 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 	*/
 	public function testInvalidAggregationType()
 	{
-		$result = $this->query()->aggregate('no_such_filter');
+		$result = $this->query()->aggregate('no_such_aggregate');
 	}
 }

@@ -65,4 +65,28 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 			}
 		}
 	}
+	
+	protected function execWithConfig(array $config)
+	{
+		$queryKeys = array_keys(self::$testData);
+		return $this->getResponse()->exec(
+			$this->getQuery(self::$testData[$queryKeys[0]]['response']),
+			'test_type',
+			$config
+		);
+	}
+	
+	public function testGetSearch()
+	{
+		// Get the to-be-submitted ElasticSearch query
+		$result = $this->execWithConfig(array('getSearch' => true));
+		$this->assertEquals('test_type', $result['type']);
+	}
+	
+	public function testGetResponse()
+	{
+		// Get the raw response from ElasticSearch without parsing
+		$result = $this->execWithConfig(array('getResponse' => true));
+		$this->assertTrue(isset($result['aggregations']));
+	}
 }

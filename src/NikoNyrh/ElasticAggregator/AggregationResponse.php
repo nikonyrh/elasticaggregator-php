@@ -14,12 +14,10 @@ class AggregationResponse
 	
 	public function exec($query, $type, $config = array())
 	{
-		$body = $query->buildBody();
-		
 		$search = array(
 			'index' => $this->config['index'],
 			'type'  => $type,
-			'body'  => $body
+			'body'  => $query->buildBody()
 		);
 		
 		if (isset($config['getSearch']) && $config['getSearch']) {
@@ -44,8 +42,7 @@ class AggregationResponse
 						
 						if (
 							isset($bucket['key_as_string']) &&
-							is_int($resultKey) &&
-							($resultKey % 1000) == 0
+							is_int($resultKey) && ($resultKey % 1000) == 0
 						) {
 							$resultKey = (new \DateTime(
 								'@' . ($resultKey/1000)

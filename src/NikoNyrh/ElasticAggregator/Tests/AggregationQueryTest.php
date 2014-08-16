@@ -256,8 +256,14 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 	}
 	
 	public function testBasicFiltering_3()
-	{
-		$result = $this->query()
+	{ 
+		$query = $this->query();
+		
+		// The same query object used twice, but this aggregation
+		// shouldn't have any effect on further calls.
+		$query->aggregate('terms', 'test_aggregation')->buildBody();
+		
+		$result = $query
 			->filter('nested', array(
 				'path'      => 'link',
 				'type'      => 'prefix',

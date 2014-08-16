@@ -9,6 +9,12 @@ class AggregationQuery
 	
 	public function __construct()
 	{
+		$this->init();
+	}
+	
+	// This is also called from buildBody, to clear previous statements
+	public function init()
+	{
 		$this->filters    = array();
 		$this->aggregates = array();
 		$this->nestedPath = array();
@@ -212,6 +218,7 @@ class AggregationQuery
 			);
 		}
 		
+		$this->init();
 		return $body;
 	}
 }

@@ -37,7 +37,7 @@ class AggregationQueryRegressionTest
 			));
 			
 			file_put_contents(
-				$outFolder . sprintf('/result_%d.json', $i+1),
+				$outFolder . sprintf('/result_%02d.json', $i+1),
 				json_encode(array(
 					'query'    => $query,
 					'response' => $response

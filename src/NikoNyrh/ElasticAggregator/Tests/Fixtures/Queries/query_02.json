@@ -1,0 +1,256 @@
+{
+	"name":    "post_length_aggregation",
+	"response": {
+		"took": 1,
+		"timed_out": false,
+		"_shards": {
+			"total": 1,
+			"successful": 1,
+			"failed": 0
+		},
+		"hits": {
+			"total": 100,
+			"max_score": 0,
+			"hits": []
+		},
+		"aggregations": {
+			"post_length_agg": {
+				"buckets": [
+					{
+						"key": 0,
+						"doc_count": 0,
+						"tag_filter": {
+							"doc_count": 0,
+							"num_of_tags_avg": {
+								"value": null
+							},
+							"num_of_tags_max": {
+								"value": null
+							}
+						}
+					},
+					{
+						"key": 25,
+						"doc_count": 14,
+						"tag_filter": {
+							"doc_count": 10,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.5
+							}
+						}
+					},
+					{
+						"key": 50,
+						"doc_count": 11,
+						"tag_filter": {
+							"doc_count": 5,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.2
+							}
+						}
+					},
+					{
+						"key": 75,
+						"doc_count": 24,
+						"tag_filter": {
+							"doc_count": 15,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.4
+							}
+						}
+					},
+					{
+						"key": 100,
+						"doc_count": 13,
+						"tag_filter": {
+							"doc_count": 8,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.25
+							}
+						}
+					},
+					{
+						"key": 125,
+						"doc_count": 15,
+						"tag_filter": {
+							"doc_count": 6,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.1666666666667
+							}
+						}
+					},
+					{
+						"key": 150,
+						"doc_count": 13,
+						"tag_filter": {
+							"doc_count": 9,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.2222222222222
+							}
+						}
+					},
+					{
+						"key": 175,
+						"doc_count": 10,
+						"tag_filter": {
+							"doc_count": 7,
+							"num_of_tags_max": {
+								"value": 4
+							},
+							"num_of_tags_avg": {
+								"value": 3.4285714285714
+							}
+						}
+					},
+					{
+						"key": 200,
+						"doc_count": 0,
+						"tag_filter": {
+							"doc_count": 0,
+							"num_of_tags_avg": {
+								"value": null
+							},
+							"num_of_tags_max": {
+								"value": null
+							}
+						}
+					},
+					{
+						"key": 225,
+						"doc_count": 0,
+						"tag_filter": {
+							"doc_count": 0,
+							"num_of_tags_avg": {
+								"value": null
+							},
+							"num_of_tags_max": {
+								"value": null
+							}
+						}
+					},
+					{
+						"key": 250,
+						"doc_count": 0,
+						"tag_filter": {
+							"doc_count": 0,
+							"num_of_tags_avg": {
+								"value": null
+							},
+							"num_of_tags_max": {
+								"value": null
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"expected": {
+		"0": {
+			"num_of_tags_avg": {
+				"value": null
+			},
+			"num_of_tags_max": {
+				"value": null
+			}
+		},
+		"25": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.5
+			}
+		},
+		"50": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.2
+			}
+		},
+		"75": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.4
+			}
+		},
+		"100": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.25
+			}
+		},
+		"125": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.1666666666667
+			}
+		},
+		"150": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.2222222222222
+			}
+		},
+		"175": {
+			"num_of_tags_max": {
+				"value": 4
+			},
+			"num_of_tags_avg": {
+				"value": 3.4285714285714
+			}
+		},
+		"200": {
+			"num_of_tags_avg": {
+				"value": null
+			},
+			"num_of_tags_max": {
+				"value": null
+			}
+		},
+		"225": {
+			"num_of_tags_avg": {
+				"value": null
+			},
+			"num_of_tags_max": {
+				"value": null
+			}
+		},
+		"250": {
+			"num_of_tags_avg": {
+				"value": null
+			},
+			"num_of_tags_max": {
+				"value": null
+			}
+		}
+	}
+}

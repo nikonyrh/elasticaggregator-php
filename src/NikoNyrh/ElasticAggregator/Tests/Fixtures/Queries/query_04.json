@@ -1,0 +1,195 @@
+{
+	"name":    "query_filter_and_stats",
+	"response": {
+        "took": 1,
+        "timed_out": false,
+        "_shards": {
+            "total": 1,
+            "successful": 1,
+            "failed": 0
+        },
+        "hits": {
+            "total": 61,
+            "max_score": 0,
+            "hits": []
+        },
+        "aggregations": {
+            "user_agg": {
+                "buckets": [
+                    {
+                        "key": "User 4",
+                        "doc_count": 19,
+                        "num_of_tags_stats": {
+                            "count": 19,
+                            "min": 3,
+                            "max": 4,
+                            "avg": 3.3684210526316,
+                            "sum": 64
+                        },
+                        "post_length_stats": {
+                            "count": 19,
+                            "min": 34,
+                            "max": 193,
+                            "avg": 109.36842105263,
+                            "sum": 2078
+                        }
+                    },
+                    {
+                        "key": "User 2",
+                        "doc_count": 13,
+                        "num_of_tags_stats": {
+                            "count": 13,
+                            "min": 3,
+                            "max": 4,
+                            "avg": 3.1538461538462,
+                            "sum": 41
+                        },
+                        "post_length_stats": {
+                            "count": 13,
+                            "min": 31,
+                            "max": 199,
+                            "avg": 133,
+                            "sum": 1729
+                        }
+                    },
+                    {
+                        "key": "User 3",
+                        "doc_count": 12,
+                        "num_of_tags_stats": {
+                            "count": 12,
+                            "min": 3,
+                            "max": 4,
+                            "avg": 3.5833333333333,
+                            "sum": 43
+                        },
+                        "post_length_stats": {
+                            "count": 12,
+                            "min": 34,
+                            "max": 193,
+                            "avg": 107.16666666667,
+                            "sum": 1286
+                        }
+                    },
+                    {
+                        "key": "User 1",
+                        "doc_count": 11,
+                        "num_of_tags_stats": {
+                            "count": 11,
+                            "min": 0,
+                            "max": 4,
+                            "avg": 3,
+                            "sum": 33
+                        },
+                        "post_length_stats": {
+                            "count": 11,
+                            "min": 30,
+                            "max": 169,
+                            "avg": 76,
+                            "sum": 836
+                        }
+                    },
+                    {
+                        "key": "User 5",
+                        "doc_count": 6,
+                        "num_of_tags_stats": {
+                            "count": 6,
+                            "min": 3,
+                            "max": 4,
+                            "avg": 3.1666666666667,
+                            "sum": 19
+                        },
+                        "post_length_stats": {
+                            "count": 6,
+                            "min": 66,
+                            "max": 183,
+                            "avg": 104,
+                            "sum": 624
+                        }
+                    }
+                ]
+            }
+        }
+    },
+	"expected": {
+		"User 4": {
+			"num_of_tags": {
+				"count": 19,
+				"min": 3,
+				"max": 4,
+				"avg": 3.3684210526316,
+				"sum": 64
+			},
+			"post_length": {
+				"count": 19,
+				"min": 34,
+				"max": 193,
+				"avg": 109.36842105263,
+				"sum": 2078
+			}
+		},
+		"User 2": {
+			"num_of_tags": {
+				"count": 13,
+				"min": 3,
+				"max": 4,
+				"avg": 3.1538461538462,
+				"sum": 41
+			},
+			"post_length": {
+				"count": 13,
+				"min": 31,
+				"max": 199,
+				"avg": 133,
+				"sum": 1729
+			}
+		},
+		"User 3": {
+			"num_of_tags": {
+				"count": 12,
+				"min": 3,
+				"max": 4,
+				"avg": 3.5833333333333,
+				"sum": 43
+			},
+			"post_length": {
+				"count": 12,
+				"min": 34,
+				"max": 193,
+				"avg": 107.16666666667,
+				"sum": 1286
+			}
+		},
+		"User 1": {
+			"num_of_tags": {
+				"count": 11,
+				"min": 0,
+				"max": 4,
+				"avg": 3,
+				"sum": 33
+			},
+			"post_length": {
+				"count": 11,
+				"min": 30,
+				"max": 169,
+				"avg": 76,
+				"sum": 836
+			}
+		},
+		"User 5": {
+			"num_of_tags": {
+				"count": 6,
+				"min": 3,
+				"max": 4,
+				"avg": 3.1666666666667,
+				"sum": 19
+			},
+			"post_length": {
+				"count": 6,
+				"min": 66,
+				"max": 183,
+				"avg": 104,
+				"sum": 624
+			}
+		}
+	}
+}

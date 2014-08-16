@@ -84,20 +84,8 @@ class AggregationResponse
 				return $response['doc_count'];
 			}
 			
-			if (isset($response['doc_count'])) {
-				unset($response['doc_count']);
-			}
-			
 			$result = array();
 			foreach ($response as $key => $value) {
-				if (isset($value['buckets'])) {
-					$buckets = $value['buckets'];
-					$value = array();
-					foreach ($buckets as $bucket) {
-						$value[$bucket['key']] = $bucket['doc_count'];
-					}
-				}
-				
 				$result[preg_replace('/_stats$/', '', $key)] = $value;
 			}
 			

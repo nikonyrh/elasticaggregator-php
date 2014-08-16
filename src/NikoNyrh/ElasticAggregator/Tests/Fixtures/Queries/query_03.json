@@ -1,0 +1,35 @@
+{
+	"name":    "query_filter",
+	"response": {
+        "took": 1,
+        "timed_out": false,
+        "_shards": {
+            "total": 1,
+            "successful": 1,
+            "failed": 0
+        },
+        "hits": {
+            "total": 4,
+            "max_score": 0,
+            "hits": []
+        },
+        "aggregations": {
+            "user_agg": {
+                "buckets": [
+                    {
+                        "key": "User 1",
+                        "doc_count": 3
+                    },
+                    {
+                        "key": "User 2",
+                        "doc_count": 1
+                    }
+                ]
+            }
+        }
+    },
+	"expected": {
+		"User 1": 3,
+		"User 2": 1
+	}
+}

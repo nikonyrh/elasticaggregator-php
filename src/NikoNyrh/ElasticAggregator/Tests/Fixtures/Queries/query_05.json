@@ -1,0 +1,53 @@
+{
+	"name":    "query_filter_and_stats",
+	"response": {
+        "took": 2,
+        "timed_out": false,
+        "_shards": {
+            "total": 1,
+            "successful": 1,
+            "failed": 0
+        },
+        "hits": {
+            "total": 63,
+            "max_score": 0,
+            "hits": []
+        },
+        "aggregations": {
+            "no_tag": {
+                "doc_count": 20,
+                "user_agg": {
+                    "buckets": [
+                        {
+                            "key": "User 2",
+                            "doc_count": 5
+                        },
+                        {
+                            "key": "User 1",
+                            "doc_count": 4
+                        },
+                        {
+                            "key": "User 3",
+                            "doc_count": 4
+                        },
+                        {
+                            "key": "User 5",
+                            "doc_count": 4
+                        },
+                        {
+                            "key": "User 4",
+                            "doc_count": 3
+                        }
+                    ]
+                }
+            }
+        }
+    },
+	"expected": {
+		"User 2": 5,
+		"User 1": 4,
+		"User 3": 4,
+		"User 5": 4,
+		"User 4": 3
+	}
+}

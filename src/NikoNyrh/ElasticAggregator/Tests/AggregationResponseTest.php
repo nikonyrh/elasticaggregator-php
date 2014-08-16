@@ -9,6 +9,7 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 	{
 		self::$testData = array();
 		$glob = __DIR__ . '/Fixtures/Queries/*.json';
+		
 		foreach (glob($glob) as $fname) {
 			self::$testData[$fname] = json_decode(
 				file_get_contents($fname),
@@ -43,13 +44,15 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 	
 	public function testResponseParser()
 	{
-		foreach (self::$testData as $testCase) {
+		foreach (self::$testData as $fname => $testCase) {
 			$result = $this->getResponse()->exec(
 				$this->getQuery($testCase['response']),
 				'test_type'
 			);
 			
 			if (!isset($testCase['expected'])) {
+				// This enables easy copy-pasting of JSON when writing new test cases,
+				// after having checked that the output is indeed correct.
 				die("\nNo expected result for:\n\n" .
 					json_encode($result, JSON_PRETTY_PRINT) . "\n");
 			}
@@ -57,7 +60,7 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 				$this->assertEquals(
 					$testCase['expected'],
 					$result,
-					$testCase['name']
+					$testCase['name'] . ' (file ' . basename($fname) . ')'
 				);
 			}
 		}

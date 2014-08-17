@@ -23,7 +23,7 @@ TODO
  - Start using this in my own procjets instead of its earlier un-tested version
  - Confirm that including this project via Composer works as intended
  - Is it good idea to configure index name at Aggregator constructor but configure object's type in exec() method?
- - Actual documentation on how stuff works, especially if the codebase grows significantly bigger
+ - Actual documentation on how stuff works, especially if the codebase grows significantly bigger (unit tests document things a bit but not sufficiently)
 
 
 Example usage
@@ -145,6 +145,25 @@ and
 
 I guess you see my point on why this is usually overly verbose.
 
+Installation
+-------
+Since this project is still at a very early stage, it isn't added to [Packagist](https://packagist.org/). For composer to find this project you need to add this repository explicitly:
+
+```json
+{
+    "require": {
+        "elasticsearch/elasticsearch": "~1.0",
+        "nikonyrh/elasticaggregator-php": "0.*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nikonyrh/elasticaggregator-php"
+        }
+    ]
+}
+
+```
 
 License
 -------

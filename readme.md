@@ -6,9 +6,9 @@ An utility PHP wrapper for [elasticsearch-php](https://github.com/elasticsearch/
 
 Features and goals
 --------
- - Simple aggregation query construction (AggregationQuery.php)
- - Simple aggregation result parsing and "condensing" (AggregationResponse.php)
- - Clean, minimalistic interfaces (combined at Aggregator.php)
+ - Simple aggregation query construction ([AggregationQuery.php](https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationQuery.php))
+ - Simple aggregation result parsing and "condensing" ((AggregationResponse.php)[https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationResponse.php])
+ - Clean, minimalistic interfaces (combined at (Aggregator.php)[https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/Aggregator.php])
  - Well tested codebase
  - Configurable and customizable for differend needs
 
@@ -29,118 +29,118 @@ TODO
 Example usage
 --------
 ```php
-	// Create the standard ElasticSearch client object
-	$client = new \Elasticsearch\Client(array(
-		'hosts' => 'localhost:9200',
-	));
-	
-	// Create the aggregator, configure the index name
-	$aggregator = new \NikoNyrh\ElasticAggregator\Aggregator(
-		$client,
-		array('index' => 'index_name')
-	);
-	
-	// For each "user" get stats on post_length field
-	$result = $aggregator
-		->aggregate('terms', 'user')
-		->stats('post_length')
-		->exec('type_name');
-	
-	echo json_encode($result, JSON_PRETTY_PRINT);
+// Create the standard ElasticSearch client object
+$client = new \Elasticsearch\Client(array(
+    'hosts' => 'localhost:9200',
+));
+
+// Create the aggregator, configure the index name
+$aggregator = new \NikoNyrh\ElasticAggregator\Aggregator(
+    $client,
+    array('index' => 'index_name')
+);
+
+// For each "user" get stats on post_length field
+$result = $aggregator
+    ->aggregate('terms', 'user')
+    ->stats('post_length')
+    ->exec('type_name');
+
+echo json_encode($result, JSON_PRETTY_PRINT);
 ```
 
 Result:
 ```json
-	{
-		"User 4": {
-			"post_length": {
-				"count": 25,
-				"min": 34,
-				"max": 193,
-				"avg": 109.44,
-				"sum": 2736
-			}
-		},
-		"User 2": {
-			"post_length": {
-				"count": 22,
-				"min": 31,
-				"max": 199,
-				"avg": 121.5,
-				"sum": 2673
-			}
-		}
-	}
+{
+    "User 4": {
+        "post_length": {
+            "count": 25,
+            "min": 34,
+            "max": 193,
+            "avg": 109.44,
+            "sum": 2736
+        }
+    },
+    "User 2": {
+        "post_length": {
+            "count": 22,
+            "min": 31,
+            "max": 199,
+            "avg": 121.5,
+            "sum": 2673
+        }
+    }
+}
 ```
 
 The corresponding raw query and response of this simple aggregation look like this:
 ```json
-	{
-		"index": "index_name",
-		"type": "type_name",
-		"body": {
-			"size": 0,
-			"aggs": {
-				"user_agg": {
-					"terms": {
-						"field": "user"
-					},
-					"aggs": {
-						"post_length_stats": {
-							"stats": {
-								"field": "post_length"
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+{
+    "index": "index_name",
+    "type": "type_name",
+    "body": {
+        "size": 0,
+        "aggs": {
+            "user_agg": {
+                "terms": {
+                    "field": "user"
+                },
+                "aggs": {
+                    "post_length_stats": {
+                        "stats": {
+                            "field": "post_length"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 and
 ```json
-	{
-		"took": 1,
-		"timed_out": false,
-		"_shards": {
-			"total": 1,
-			"successful": 1,
-			"failed": 0
-		},
-		"hits": {
-			"total": 100,
-			"max_score": 0,
-			"hits": []
-		},
-		"aggregations": {
-			"user_agg": {
-				"buckets": [
-					{
-						"key": "User 4",
-						"doc_count": 25,
-						"post_length_stats": {
-							"count": 25,
-							"min": 34,
-							"max": 193,
-							"avg": 109.44,
-							"sum": 2736
-						}
-					},
-					{
-						"key": "User 2",
-						"doc_count": 22,
-						"post_length_stats": {
-							"count": 22,
-							"min": 31,
-							"max": 199,
-							"avg": 121.5,
-							"sum": 2673
-						}
-					}
-				]
-			}
-		}
-	}
+{
+    "took": 1,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "failed": 0
+    },
+    "hits": {
+        "total": 100,
+        "max_score": 0,
+        "hits": []
+    },
+    "aggregations": {
+        "user_agg": {
+            "buckets": [
+                {
+                    "key": "User 4",
+                    "doc_count": 25,
+                    "post_length_stats": {
+                        "count": 25,
+                        "min": 34,
+                        "max": 193,
+                        "avg": 109.44,
+                        "sum": 2736
+                    }
+                },
+                {
+                    "key": "User 2",
+                    "doc_count": 22,
+                    "post_length_stats": {
+                        "count": 22,
+                        "min": 31,
+                        "max": 199,
+                        "avg": 121.5,
+                        "sum": 2673
+                    }
+                }
+            ]
+        }
+    }
+}
 ```
 
 I guess you see my point on why this is usually overly verbose.

@@ -1,9 +1,11 @@
 {
     "name": "NikoNyrh/ElasticAggregator",
     "autoload": {
-        "psr-4": {"NikoNyrh\\": "src/NikoNyrh"}
+        "psr-4": {
+            "NikoNyrh\\": "src/NikoNyrh"
+        }
     },
-	"require-dev": {
-		"elasticsearch/elasticsearch": "~1.0"
-	}
+    "require-dev": {
+        "elasticsearch/elasticsearch": "~1.0"
+    }
 }

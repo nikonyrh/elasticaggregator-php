@@ -6,9 +6,9 @@ An utility PHP wrapper for [elasticsearch-php](https://github.com/elasticsearch/
 
 Features and goals
 --------
- - Simple aggregation query construction ( [AggregationQuery.php](https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationQuery.php) )
- - Simple aggregation result parsing and "condensing" ( (AggregationResponse.php)[https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationResponse.php] )
- - Clean, minimalistic interfaces (combined at (Aggregator.php)[https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/Aggregator.php] )
+ - Simple aggregation query construction ([AggregationQuery.php](https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationQuery.php))
+ - Simple aggregation result parsing and "condensing" ([AggregationResponse.php](https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/AggregationResponse.php))
+ - Clean, minimalistic interfaces (combined at [Aggregator.php](https://github.com/NikoNyrh/ElasticAggregator/blob/master/src/NikoNyrh/ElasticAggregator/Aggregator.php))
  - Well tested codebase
  - Configurable and customizable for differend needs
 

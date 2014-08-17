@@ -2,6 +2,7 @@
 !*/
 !*.php
 !*.sh
+!*.md
 !.gitignore
 !composer.json
 vendor

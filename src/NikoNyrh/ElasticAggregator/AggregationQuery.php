@@ -103,8 +103,12 @@ class AggregationQuery
 			$this->aggregates[$type['name'] . "_$i"] = $type['aggs'];
 		}
 		elseif ($type == 'terms') {
-			$this->aggregates[$config . "_agg_$i"] = array(
-				$type => array('field' => $config)
+			if (!is_array($config)) {
+				$config = array('field' => $config);
+			}
+			
+			$this->aggregates[$config['field'] . "_agg_$i"] = array(
+				$type => $config
 			);
 		}
 		elseif ($type == 'date_histogram') {
@@ -127,6 +131,18 @@ class AggregationQuery
 					'extended_bounds' => isset($config['extended_bounds']) ?
 						$config['extended_bounds'] : null
 				)
+			);
+		}
+		elseif ($type == 'nested') {
+			$this->aggregates[$config . "_agg_$i"] = array(
+				$type => array(
+					'path' => $config
+				)
+			);
+		}
+		elseif ($type == 'reverse_nested') {
+			$this->aggregates["_parent_$i"] = array(
+				$type => new \stdClass()
 			);
 		}
 		elseif ($type == 'filter') {
@@ -185,7 +201,14 @@ class AggregationQuery
 			}
 			else {
 				$agg = $this->aggregates[$key];
-				$agg['aggs'] = $aggs;
+				
+				if (!isset($aggs['_parent'])) {
+					$agg['aggs'] = $aggs;
+				}
+				else {
+					$agg['parent'] = $aggs['_parent'];
+				}
+				
 				$aggs = array($aggKey => $agg);
 			}
 			

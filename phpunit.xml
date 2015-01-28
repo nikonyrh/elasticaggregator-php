@@ -1,0 +1,8 @@
+<phpunit
+		bootstrap="src/NikoNyrh/ElasticAggregator/Tests/bootstrap.php">
+	<testsuites>
+		<testsuite name="Tests">
+			<directory suffix="Test.php">src/NikoNyrh/ElasticAggregator/Tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

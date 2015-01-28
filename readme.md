@@ -20,8 +20,6 @@ TODO
  - Improve the overall the flexibility of the library, now this only works on trivial use cases
  - Write tests for all existing aggregation queries
  - Use 4 spaces instead of tabs? That PSR-2 stuff... :(
- - Start using this in my own procjets instead of its earlier un-tested version
- - Confirm that including this project via Composer works as intended
  - Is it good idea to configure index name at Aggregator constructor but configure object's type in exec() method?
  - Actual documentation on how stuff works, especially if the codebase grows significantly bigger (unit tests document things a bit but not sufficiently)
 
@@ -29,9 +27,12 @@ TODO
 Example usage
 --------
 ```php
+// Assuming this file is under "src/" or something similar...
+include(__DIR__ . '/../vendor/autoload.php');
+
 // Create the standard ElasticSearch client object
 $client = new \Elasticsearch\Client(array(
-    'hosts' => 'localhost:9200',
+    'hosts' => array('localhost:9200'),
 ));
 
 // Create the aggregator, configure the index name

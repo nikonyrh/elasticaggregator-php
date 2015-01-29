@@ -1,4 +1,4 @@
 #!/bin/bash
 B=`dirname $0`
 cd "$B/.."
-phpunit -c tests/phpunit.xml.dist --coverage-html coverage
+phpunit --configuration phpunit.xml --coverage-html coverage

@@ -8,13 +8,13 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 		return new \NikoNyrh\ElasticAggregator\AggregationQuery();
 	}
 	
-	protected function decode($json)
+	protected function decode($in)
 	{
-		// Return an array, not an object
-		return json_decode($json, true);
+		// Return objects, in some contexts we want to generate {} in JSON instead of []!
+		return json_decode(is_string($in) ? $in : json_encode($in));
 	}
 	
-	public function testBasicAggregation_1()
+	public function testAggregation_termsAndDate()
 	{
 		// - Find users with most posts,
 		// - group posts by date and
@@ -56,10 +56,10 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
-		'), $result);
+		'), $this->decode($result));
 	}
 	
-	public function testBasicAggregation_2()
+	public function testAggregation_histogramAndFilter()
 	{
 		// - Group posts by length and
 		// - filter on of posts tagged as ES and
@@ -122,10 +122,78 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
-		'), $result);
+		'), $this->decode($result));
 	}
 	
-	public function testBasicFiltering_1()
+	public function testAggregation_nestedAndReverseNested()
+	{
+		$result = $this->query()
+			->aggregate('nested', 'level1')
+			->aggregate('terms', array('field' => 'level1.name', 'size' => 10))
+			->stats('level1.value')
+			
+			->aggregate('reverse_nested')
+			
+			->aggregate('nested', 'level2')
+			->aggregate('terms', array('field' => 'level2.name', 'size' => 20))
+			->stats('level2.value')
+			->buildBody();
+		
+		$this->assertEquals($this->decode('
+			{
+				"size": 0,
+				"aggs": {
+					"level1_agg": {
+						"nested": {
+							"path": "level1"
+						},
+						"aggs": {
+							"level1.name_agg": {
+								"terms": {
+									"field": "level1.name",
+									"size": 10
+								},
+								"aggs": {
+									"level1.value_stats": {
+										"stats": {
+											"field": "level1.value"
+										}
+									},
+									"parent": {
+										"reverse_nested": {},
+										"aggs": {
+											"level2_agg": {
+												"nested": {
+													"path": "level2"
+												},
+												"aggs": {
+													"level2.name_agg": {
+														"terms": {
+															"field": "level2.name",
+															"size": 20
+														},
+														"aggs": {
+															"level2.value_stats": {
+																"stats": {
+																	"field": "level2.value"
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		'), $this->decode($result));
+	}
+	
+	public function testFiltering_notAndRange()
 	{
 		// - Keep posts not tagged as ES or MySQL and
 		// - keep posts longer than 50 characters and
@@ -178,10 +246,10 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
-		'), $result);
+		'), $this->decode($result));
 	}
 	
-	public function testBasicFiltering_2()
+	public function testFiltering_orFilter()
 	{
 		// - Keep posts not tagged as ES, or having ids 1, 2 or 3
 		// - get users with most matchings posts
@@ -252,10 +320,10 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
-		'), $result);
+		'), $this->decode($result));
 	}
 	
-	public function testBasicFiltering_3()
+	public function testFiltering_nestedFilter()
 	{ 
 		$query = $this->query();
 		
@@ -314,7 +382,7 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
-		'), $result);
+		'), $this->decode($result));
 	}
 	
 	/**

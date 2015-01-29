@@ -6,6 +6,11 @@ class AggregationResponse
 	protected $esClient;
 	protected $config;
 	
+	// A lazy way to toggle debug printing :P
+	protected static function debug($msg) {
+		// echo $msg;
+	}
+	
 	public function __construct($esClient, array $config = array())
 	{
 		$this->esClient = $esClient;
@@ -30,12 +35,40 @@ class AggregationResponse
 			return $response;
 		}
 		
+		$keysToSkip = array(
+			'doc_count_error_upper_bound',
+			'sum_other_doc_count'
+		);
+		
+		$removeKeysToSkip = function (&$arr) use (&$removeKeysToSkip, $keysToSkip) {
+			if (!is_array($arr)) {
+				return;
+			}
+			
+			foreach ($keysToSkip as $key) {
+				if (isset($arr[$key])) {
+					unset($arr[$key]);
+				}
+			}
+			
+			foreach (array_keys($arr) as $key) {
+				$removeKeysToSkip($arr[$key]);
+			}
+		};
+		
+		$removeKeysToSkip($response);
+		
 		$parse = function ($response) use (&$parse) {
 			if (sizeof($response) == 1) {
 				$key = array_keys($response);
 				$key = $key[0];
 				
 				if (isset($response[$key]['buckets'])) {
+					self::debug(sprintf(
+						"Case 1a (%s): %s\n",
+						$key, print_r($response[$key], true)
+					));
+					
 					$result = array();
 					foreach ($response[$key]['buckets'] as $bucket) {
 						$resultKey = $bucket['key'];
@@ -68,9 +101,39 @@ class AggregationResponse
 					sizeof($response[$key]) > 1 &&
 					isset($response[$key]['doc_count'])
 				) {
+					self::debug(sprintf(
+						"Case 1b (%s): %s\n",
+						$key, print_r($response[$key], true)
+					));
+					
 					unset($response[$key]['doc_count']);
 					return $parse($response[$key]);
 				}
+				else {
+					self::debug(sprintf(
+						"Case 1c (%s): %s\n",
+						$key, print_r($response[$key], true)
+					));
+				}
+			}
+			elseif (
+				isset($response['parent'])
+			) {
+				self::debug(sprintf(
+					"Case 2a: %s\n", print_r($response, true)
+				));
+				
+				$parent = $response['parent'];
+				unset($response['parent']);
+				
+				$tmp = $parse($response);
+				$tmp['parent'] = $parse(array('parent' => $parent));
+				return $tmp;
+			}
+			else {
+				self::debug(sprintf(
+					"Case 2b %s\n", print_r($response, true)
+				));
 			}
 			
 			if (
@@ -89,6 +152,8 @@ class AggregationResponse
 			return $result;
 		};
 		
-		return $parse($response['aggregations']);
+		$result = $parse($response['aggregations']);
+		self::debug(sprintf("Result: %s\n", print_r($result, true)));
+		return $result;
 	}
 }

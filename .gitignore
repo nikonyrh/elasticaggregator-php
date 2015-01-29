@@ -3,6 +3,7 @@
 !*.php
 !*.sh
 !*.md
+!*.xml
 !.gitignore
 !composer.json
 vendor

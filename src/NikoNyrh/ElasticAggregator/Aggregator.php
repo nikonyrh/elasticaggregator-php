@@ -4,7 +4,7 @@ namespace NikoNyrh\ElasticAggregator;
 /*
 	This is the main intended usage of this library:
 		$client = new \Elasticsearch\Client(array(
-			'hosts' => 'localhost:9200',
+			'hosts' => array('localhost:9200'),
 		));
 		
 		$aggregator = new \NikoNyrh\ElasticAggregator\Aggregator(

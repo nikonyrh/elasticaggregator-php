@@ -1,0 +1,198 @@
+{
+	"name":    "nested_and_reverse_nested",
+	"response": {
+		"took": 116,
+		"timed_out": false,
+		"_shards": {
+			"total": 2,
+			"successful": 2,
+			"failed": 0
+		},
+		"hits": {
+			"total": 455884,
+			"max_score": 0,
+			"hits": []
+		},
+		"aggregations": {
+			"level1_agg": {
+				"doc_count": 615112,
+				"level1.name_agg": {
+					"doc_count_error_upper_bound": 0,
+					"sum_other_doc_count": 0,
+					"buckets": [
+						{
+							"key": "FOOD",
+							"doc_count": 439892,
+							"level1.value_stats": {
+								"count": 439892,
+								"min": 0,
+								"max": 6799,
+								"avg": 112,
+								"sum": 49701153
+							},
+							"parent": {
+								"doc_count": 439892,
+								"level2_agg": {
+									"doc_count": 837538,
+									"level2.name_agg": {
+										"doc_count_error_upper_bound": 0,
+										"sum_other_doc_count": 8164,
+										"buckets": [
+											{
+												"key": "Bebidas (Sin alcohol)",
+												"doc_count": 106257,
+												"level2.value_stats": {
+													"count": 106257,
+													"min": 1,
+													"max": 2840,
+													"avg": 26,
+													"sum": 2769620
+												}
+											},
+											{
+												"key": "Lacteos",
+												"doc_count": 81798,
+												"level2.value_stats": {
+													"count": 81798,
+													"min": 2,
+													"max": 3624,
+													"avg": 27,
+													"sum": 2254817
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						{
+							"key": "NON-FOOD",
+							"doc_count": 175220,
+							"level1.value_stats": {
+								"count": 175220,
+								"min": 2,
+								"max": 2465,
+								"avg": 64,
+								"sum": 11296641
+							},
+							"parent": {
+								"doc_count": 175220,
+								"level2_agg": {
+									"doc_count": 847154,
+									"level2.name_agg": {
+										"doc_count_error_upper_bound": 0,
+										"sum_other_doc_count": 70593,
+										"buckets": [
+											{
+												"key": "Limpieza del Hogar",
+												"doc_count": 83139,
+												"level2.value_stats": {
+													"count": 83139,
+													"min": 5,
+													"max": 2465,
+													"avg": 43,
+													"sum": 3638537
+												}
+											},
+											{
+												"key": "Limpieza y Desechables",
+												"doc_count": 80988,
+												"level2.value_stats": {
+													"count": 80988,
+													"min": 2,
+													"max": 2422,
+													"avg": 45,
+													"sum": 3725306
+												}
+											},
+											{
+												"key": "Abarrotes",
+												"doc_count": 58215,
+												"level2.value_stats": {
+													"count": 58215,
+													"min": 1,
+													"max": 5268,
+													"avg": 50,
+													"sum": 2955529
+												}
+											}
+										]
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	},
+	"expected": {
+		"FOOD": {
+			"level1.value": {
+				"count": 439892,
+				"min": 0,
+				"max": 6799,
+				"avg": 112,
+				"sum": 49701153
+			},
+			"parent": {
+				"Bebidas (Sin alcohol)": {
+					"level2.value": {
+						"count": 106257,
+						"min": 1,
+						"max": 2840,
+						"avg": 26,
+						"sum": 2769620
+					}
+				},
+				"Lacteos": {
+					"level2.value": {
+						"count": 81798,
+						"min": 2,
+						"max": 3624,
+						"avg": 27,
+						"sum": 2254817
+					}
+				}
+			}
+		},
+		"NON-FOOD": {
+			"level1.value": {
+				"count": 175220,
+				"min": 2,
+				"max": 2465,
+				"avg": 64,
+				"sum": 11296641
+			},
+			"parent": {
+				"Limpieza del Hogar": {
+					"level2.value": {
+						"count": 83139,
+						"min": 5,
+						"max": 2465,
+						"avg": 43,
+						"sum": 3638537
+					}
+				},
+				"Limpieza y Desechables": {
+					"level2.value": {
+						"count": 80988,
+						"min": 2,
+						"max": 2422,
+						"avg": 45,
+						"sum": 3725306
+					}
+				},
+				"Abarrotes": {
+					"level2.value": {
+						"count": 58215,
+						"min": 1,
+						"max": 5268,
+						"avg": 50,
+						"sum": 2955529
+					}
+				}
+			}
+		}
+	}
+}

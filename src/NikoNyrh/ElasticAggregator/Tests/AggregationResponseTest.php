@@ -53,8 +53,10 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 			if (!isset($testCase['expected'])) {
 				// This enables easy copy-pasting of JSON when writing new test cases,
 				// after having checked that the output is indeed correct.
-				die("\nNo expected result for:\n\n" .
-					json_encode($result, JSON_PRETTY_PRINT) . "\n");
+				$result = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+				echo $result ? '' : json_last_error_msg();
+				
+				die("\nNo expected result for '$fname':\n\n$result\n");
 			}
 			else {
 				$this->assertEquals(

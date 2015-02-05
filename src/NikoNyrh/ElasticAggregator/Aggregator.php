@@ -63,6 +63,11 @@ class Aggregator extends AggregationQuery
 		);
 	}
 	
+	public function setIndex($index) {
+		$this->response->setIndex($index);
+		return $this;
+	}
+	
 	public function exec($type, $config = array())
 	{
 		return $this->response->exec(

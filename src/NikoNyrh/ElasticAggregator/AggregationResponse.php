@@ -17,6 +17,11 @@ class AggregationResponse
 		$this->config   = $config;
 	}
 	
+	public function setIndex($index) {
+		$this->config['index'] = $index;
+		return $this;
+	}
+	
 	public function exec($query, $type, $config = array())
 	{
 		$search = array(
@@ -24,6 +29,13 @@ class AggregationResponse
 			'type'  => $type,
 			'body'  => $query->buildBody()
 		);
+		
+		$hasQuery = isset($config['query']);
+		
+		if ($hasQuery) {
+			$search['body']['query'] = $config['query']['query'];
+			$search['body']['size']  = $config['query']['size'];
+		}
 		
 		if (isset($config['getSearch']) && $config['getSearch']) {
 			return $search;
@@ -154,6 +166,17 @@ class AggregationResponse
 		
 		$result = $parse($response['aggregations']);
 		self::debug(sprintf("Result: %s\n", print_r($result, true)));
-		return $result;
+		
+		if (!$hasQuery) {
+			return $result;
+		}
+		
+		$hits = array();
+		foreach ($response['hits']['hits'] as $hit) {
+			$hit['_source']['_score'] = $hit['_score'];
+			$hits[] = $hit['_source'];
+		}
+		
+		return array('hits' => $hits, 'aggs' => $result);
 	}
 }

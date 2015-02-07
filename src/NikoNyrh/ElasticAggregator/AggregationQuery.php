@@ -145,6 +145,15 @@ class AggregationQuery
 				$type => new \stdClass()
 			);
 		}
+		elseif ($type == 'significant_terms') {
+			if (!is_array($config)) {
+				$config = array('field' => $config);
+			}
+			
+			$this->aggregates[$config['field'] . "_agg_$i"] = array(
+				$type => $config
+			);
+		}
 		elseif ($type == 'filter') {
 			$this->aggregates[$config['field'] . "_filter_$i"] = array(
 				$type => array(

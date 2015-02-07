@@ -30,11 +30,18 @@ class AggregationResponse
 			'body'  => $query->buildBody()
 		);
 		
-		$hasQuery = isset($config['query']);
+		$hasQuery = isset($config['query']) && !empty($config['query']);
 		
 		if ($hasQuery) {
-			$search['body']['query'] = $config['query']['query'];
-			$search['body']['size']  = $config['query']['size'];
+			if (isset($config['query']['query'])) {
+				$search['body']['query'] = $config['query']['query'];
+				$search['body']['size']  = isset($config['query']['size']) ?
+					$config['query']['size'] : 0;
+			}
+			else {
+				$search['body']['query'] = $config['query'];
+				$search['body']['size']  = 0;
+			}
 		}
 		
 		if (isset($config['getSearch']) && $config['getSearch']) {
@@ -167,7 +174,13 @@ class AggregationResponse
 		$result = $parse($response['aggregations']);
 		self::debug(sprintf("Result: %s\n", print_r($result, true)));
 		
-		if (!$hasQuery) {
+		$object2array = isset($config['object2array']) && $config['object2array'];
+		
+		if ($object2array) {
+			$result = $this->object2array($result);
+		}
+		
+		if (!$hasQuery || $search['body']['size'] <= 0) {
 			return $result;
 		}
 		
@@ -178,5 +191,27 @@ class AggregationResponse
 		}
 		
 		return array('hits' => $hits, 'aggs' => $result);
+	}
+	
+	protected function object2array($arr, $iter=0) {
+		// PHP preserves key-value array order but in general JSON does not.
+		if (!is_array($arr) || empty($arr)) {
+			return $arr;
+		}
+		
+		$keys = array_keys($arr);
+		
+		if (!is_array($arr[$keys[0]])) {
+			return $arr;
+		}
+		
+		$result = array();
+		foreach ($keys as $key) {
+			$result[] = array(
+				'key'   => $key,
+				'value' => $this->object2array($arr[$key])
+			);
+		}
+		return $result;
 	}
 }

@@ -171,7 +171,10 @@ class AggregationResponse
 			return $result;
 		};
 		
-		$result = $parse($response['aggregations']);
+		$result = isset($response['aggregations']) ?
+			$parse($response['aggregations']) :
+			null;
+		
 		self::debug(sprintf("Result: %s\n", print_r($result, true)));
 		
 		$object2array = isset($config['object2array']) && $config['object2array'];

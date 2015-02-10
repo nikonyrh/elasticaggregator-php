@@ -201,6 +201,10 @@ class AggregationQuery
 	{
 		$aggs = array();
 		
+		if ($this->aggregates == null) {
+			$this->aggregates = array();
+		}
+		
 		// The most recently added aggregations go to the deepest nesting level
 		foreach (array_reverse(array_keys($this->aggregates)) as $key) {
 			$aggKey = preg_replace('/_[0-9]+$/', '', $key);
@@ -227,9 +231,12 @@ class AggregationQuery
 		}
 		
 		$body = array(
-			'size' => 0,
-			'aggs' => $aggs
+			'size' => 0
 		);
+		
+		if (!empty($aggs)) {
+			$body['aggs'] = $aggs;
+		}
 		
 		if (!empty($this->filters)) {
 			if (sizeof($this->filters) == 1) {

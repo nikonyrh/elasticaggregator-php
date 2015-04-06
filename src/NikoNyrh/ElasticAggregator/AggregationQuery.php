@@ -20,6 +20,10 @@ class AggregationQuery
 		$this->nestedPath = array();
 	}
 	
+	public function getAggregates() {
+		return $this->aggregates;
+	}
+	
 	public function genFilter($type, $config = null)
 	{
 		$passThroughTypes = array_flip(array(
@@ -95,6 +99,10 @@ class AggregationQuery
 		return $this;
 	}
 	
+	public function callOn($callback, $params) {
+		return $callback($this, $params);
+	}
+	
 	public function aggregate($type, $config = null)
 	{
 		$i = sizeof($this->aggregates) + 1;
@@ -145,14 +153,51 @@ class AggregationQuery
 				$type => new \stdClass()
 			);
 		}
-		elseif ($type == 'significant_terms') {
+		elseif (
+			$type == 'significant_terms' ||
+			$type == 'percentile_ranks' ||
+			$type == 'percentiles' ||
+			$type == 'filters'
+		) {
 			if (!is_array($config)) {
 				$config = array('field' => $config);
 			}
 			
-			$this->aggregates[$config['field'] . "_agg_$i"] = array(
-				$type => $config
-			);
+			if (isset($config['_generate'])) {
+				$field  = $config['field'];
+				$result = array();
+				
+				if (isset($config['_generate']['ranges'])) {
+					$ranges = $config['_generate']['ranges'];
+					$n      = sizeof($ranges);
+					
+					foreach (range(0,$n) as $j) {
+						$tmp = array();
+						
+						if ($j > 0) {
+							$tmp['gt'] = $ranges[$j-1];
+						}
+						
+						if ($j < $n) {
+							$tmp['lte'] = $ranges[$j];
+						}
+						
+						$result[] = array('range' => array($field => $tmp));
+					}
+				}
+				else {
+					throw new \InvalidArgumentException("Unknown type at filters _generate!");
+				}
+				
+				$this->aggregates[$field . "_agg_$i"] = array(
+					'filters' => array('filters' => $result)
+				);
+			}
+			else {
+				$this->aggregates[$config['field'] . "_agg_$i"] = array(
+					$type => $config
+				);
+			}
 		}
 		elseif ($type == 'filter') {
 			$this->aggregates[$config['field'] . "_filter_$i"] = array(
@@ -214,14 +259,7 @@ class AggregationQuery
 			}
 			else {
 				$agg = $this->aggregates[$key];
-				
-				if (!isset($aggs['_parent'])) {
-					$agg['aggs'] = $aggs;
-				}
-				else {
-					$agg['parent'] = $aggs['_parent'];
-				}
-				
+				$agg['aggs'] = $aggs;
 				$aggs = array($aggKey => $agg);
 			}
 			
@@ -257,6 +295,7 @@ class AggregationQuery
 			);
 		}
 		
+		// Clean up for the next call
 		$this->init();
 		return $body;
 	}

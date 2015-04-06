@@ -24,6 +24,17 @@ class AggregationResponse
 	
 	public function exec($query, $type, $config = array())
 	{
+		$hasFlag = function ($key) use ($config) {
+			return
+				(isset($config[$key]) && $config[$key]) || (
+				isset($config['flags']) && isset($config['flags'][$key])
+			);
+		};
+		
+		if ($hasFlag('getOrigin')) {
+			return $query->getAggregates();
+		}
+		
 		$search = array(
 			'index' => $this->config['index'],
 			'type'  => $type,
@@ -42,15 +53,19 @@ class AggregationResponse
 				$search['body']['query'] = $config['query'];
 				$search['body']['size']  = 0;
 			}
+			
+			if (isset($config['query']['highlight'])) {
+				$search['body']['highlight'] = $config['query']['highlight'];
+			}
 		}
 		
-		if (isset($config['getSearch']) && $config['getSearch']) {
+		if ($hasFlag('getSearch')) {
 			return $search;
 		}
 		
 		$response = $this->esClient->search($search);
 		
-		if (isset($config['getResponse']) && $config['getResponse']) {
+		if ($hasFlag('getResponse')) {
 			return $response;
 		}
 		
@@ -90,18 +105,23 @@ class AggregationResponse
 					
 					$result = array();
 					foreach ($response[$key]['buckets'] as $bucket) {
-						$resultKey = $bucket['key'];
-						
-						if (
-							isset($bucket['key_as_string']) &&
-							is_int($resultKey) && ($resultKey % 1000) == 0
-						) {
-							$resultKey = (new \DateTime(
-								'@' . ($resultKey/1000)
-							))->format('Y-m-d H:i:s');
+						if (isset($bucket['key'])) {
+							$resultKey = $bucket['key'];
+							
+							if (
+								isset($bucket['key_as_string']) &&
+								is_int($resultKey) && ($resultKey % 1000) == 0
+							) {
+								$resultKey = (new \DateTime(
+									'@' . ($resultKey/1000)
+								))->format('Y-m-d H:i:s');
+							}
+							
+							unset($bucket['key']);
 						}
-						
-						unset($bucket['key']);
+						else {
+							$resultKey = sizeof($result);
+						}
 						
 						if (isset($bucket['key_as_string'])) {
 							unset($bucket['key_as_string']);
@@ -184,16 +204,28 @@ class AggregationResponse
 		}
 		
 		if (!$hasQuery || $search['body']['size'] <= 0) {
-			return $result;
+			return $hasFlag('getHits') ? array(
+				'totalHits' => $response['hits']['total'],
+				'result'    => $result
+			) : $result;
 		}
 		
 		$hits = array();
 		foreach ($response['hits']['hits'] as $hit) {
 			$hit['_source']['_score'] = $hit['_score'];
+			
+			if (isset($hit['highlight'])) {
+				$hit['_source']['_highlight'] = $hit['highlight'];
+			}
+			
 			$hits[] = $hit['_source'];
 		}
 		
-		return array('hits' => $hits, 'aggs' => $result);
+		return array(
+			'totalHits' => $response['hits']['total'],
+			'hits'      => $hits,
+			'aggs'      => $result
+		);
 	}
 	
 	protected function object2array($arr, $iter=0) {

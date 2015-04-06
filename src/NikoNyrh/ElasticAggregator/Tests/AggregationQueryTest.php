@@ -159,23 +159,25 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 											"field": "level1.value"
 										}
 									},
-									"parent": {
-										"reverse_nested": {},
-										"aggs": {
-											"level2_agg": {
-												"nested": {
-													"path": "level2"
-												},
-												"aggs": {
-													"level2.name_agg": {
-														"terms": {
-															"field": "level2.name",
-															"size": 20
-														},
-														"aggs": {
-															"level2.value_stats": {
-																"stats": {
-																	"field": "level2.value"
+									"aggs": {
+										"_parent": {
+											"reverse_nested": {},
+											"aggs": {
+												"level2_agg": {
+													"nested": {
+														"path": "level2"
+													},
+													"aggs": {
+														"level2.name_agg": {
+															"terms": {
+																"field": "level2.name",
+																"size": 20
+															},
+															"aggs": {
+																"level2.value_stats": {
+																	"stats": {
+																		"field": "level2.value"
+																	}
 																}
 															}
 														}

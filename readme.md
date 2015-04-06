@@ -153,7 +153,6 @@ Since this project is still at a very early stage, it isn't added to [Packagist]
 ```json
 {
     "require": {
-        "elasticsearch/elasticsearch": "~1.0",
         "nikonyrh/elasticaggregator-php": "0.*"
     },
     "repositories": [

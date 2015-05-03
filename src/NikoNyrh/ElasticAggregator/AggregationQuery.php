@@ -110,7 +110,11 @@ class AggregationQuery
 		if (is_array($type)) {
 			$this->aggregates[$type['name'] . "_$i"] = $type['aggs'];
 		}
-		elseif ($type == 'terms') {
+		elseif (
+			$type == 'significant_terms' ||
+			$type == 'percentile_ranks' ||
+			$type == 'terms'
+		) {
 			if (!is_array($config)) {
 				$config = array('field' => $config);
 			}
@@ -119,26 +123,14 @@ class AggregationQuery
 				$type => $config
 			);
 		}
-		elseif ($type == 'date_histogram') {
-			$this->aggregates[$config['field'] . "_agg_$i"] = array(
-				$type => array(
-					'field'         => $config['field'],
-					'interval'      => $config['interval'],
-					'min_doc_count' => isset($config['min_doc_count']) ?
-						$config['min_doc_count'] : 0
-				)
-			);
-		}
-		elseif ($type == 'histogram') {
-			$this->aggregates[$config['field'] . "_agg_$i"] = array(
-				$type => array(
-					'field'           => $config['field'],
-					'interval'        => $config['interval'],
-					'min_doc_count'   => isset($config['min_doc_count']) ?
-						$config['min_doc_count'] : 0,
-					'extended_bounds' => isset($config['extended_bounds']) ?
-						$config['extended_bounds'] : null
-				)
+		elseif (
+			$type == 'date_histogram' ||
+			$type == 'histogram' ||
+			$type == 'top_hits'
+		) {
+			$key = isset($config['field']) ? $config['field'] : $type;
+			$this->aggregates[$key . "_agg_$i"] = array(
+				$type => $config
 			);
 		}
 		elseif ($type == 'nested') {
@@ -154,50 +146,36 @@ class AggregationQuery
 			);
 		}
 		elseif (
-			$type == 'significant_terms' ||
-			$type == 'percentile_ranks' ||
-			$type == 'percentiles' ||
-			$type == 'filters'
+			$type == '_generate'
 		) {
-			if (!is_array($config)) {
-				$config = array('field' => $config);
-			}
+			$field  = $config['field'];
+			$result = array();
 			
-			if (isset($config['_generate'])) {
-				$field  = $config['field'];
-				$result = array();
+			if (isset($config['_generate']['ranges'])) {
+				$ranges = $config['_generate']['ranges'];
+				$n      = sizeof($ranges);
 				
-				if (isset($config['_generate']['ranges'])) {
-					$ranges = $config['_generate']['ranges'];
-					$n      = sizeof($ranges);
+				foreach (range(0,$n) as $j) {
+					$tmp = array();
 					
-					foreach (range(0,$n) as $j) {
-						$tmp = array();
-						
-						if ($j > 0) {
-							$tmp['gt'] = $ranges[$j-1];
-						}
-						
-						if ($j < $n) {
-							$tmp['lte'] = $ranges[$j];
-						}
-						
-						$result[] = array('range' => array($field => $tmp));
+					if ($j > 0) {
+						$tmp['gt'] = $ranges[$j-1];
 					}
+					
+					if ($j < $n) {
+						$tmp['lte'] = $ranges[$j];
+					}
+					
+					$result[] = array('range' => array($field => $tmp));
 				}
-				else {
-					throw new \InvalidArgumentException("Unknown type at filters _generate!");
-				}
-				
-				$this->aggregates[$field . "_agg_$i"] = array(
-					'filters' => array('filters' => $result)
-				);
 			}
 			else {
-				$this->aggregates[$config['field'] . "_agg_$i"] = array(
-					$type => $config
-				);
+				throw new \InvalidArgumentException("Unknown type at filters _generate!");
 			}
+			
+			$this->aggregates[$field . "_agg_$i"] = array(
+				'filters' => array('filters' => $result)
+			);
 		}
 		elseif ($type == 'filter') {
 			$this->aggregates[$config['field'] . "_filter_$i"] = array(
@@ -215,6 +193,15 @@ class AggregationQuery
 		return $this;
 	}
 	
+	public function metric($type, array $config)
+	{
+		$i = sizeof($this->aggregates) + 1;
+		$this->aggregates["_metric_$i"] = array($type => $config);
+		
+		return $this;
+	}
+	
+	//TODO: Replace this with "metrics"!
 	public function stats($fields)
 	{
 		if (!is_array($fields)) {
@@ -224,7 +211,6 @@ class AggregationQuery
 		$stats = array();
 		
 		foreach ($fields as $field) {
-			$i = sizeof($this->aggregates) + 1;
 			if (is_array($field)) {
 				$stats[$field['field'] . '_' . $field['type']] = array(
 					$field['type'] => array('field' => $field['field'])
@@ -237,6 +223,7 @@ class AggregationQuery
 			}
 		}
 		
+		$i = sizeof($this->aggregates) + 1;
 		$this->aggregates["_merged_$i"] = $stats;
 		
 		return $this;
@@ -250,15 +237,40 @@ class AggregationQuery
 			$this->aggregates = array();
 		}
 		
-		// The most recently added aggregations go to the deepest nesting level
-		foreach (array_reverse(array_keys($this->aggregates)) as $key) {
+		// Count how many metrics exist for each field
+		$metricCounts = array();
+		foreach ($this->aggregates as $key => $agg) {
 			$aggKey = preg_replace('/_[0-9]+$/', '', $key);
 			
+			if ($aggKey == '_metric') {
+				$keys  = array_keys($agg);
+				$field = $agg[$keys[0]]['field'];
+				
+				if (!isset($metricCounts[$field])) {
+					$metricCounts[$field] = array();
+				}
+				
+				$metricCounts[$field][$key] = 1 + sizeof($metricCounts[$field]);
+			}
+		}
+		
+		// The most recently added aggregations go to the deepest nesting level
+		foreach (array_reverse($this->aggregates) as $key => $agg) {
+			$aggKey = preg_replace('/_[0-9]+$/', '', $key);
+			
+			if ($aggKey == '_metric') {
+				$keys  = array_keys($agg);
+				$field = $agg[$keys[0]]['field'];
+				$c     = $metricCounts[$field];
+				
+				$aggs[$field . '_metric' . (sizeof($c) > 1 ? '_' . $c[$key] : '')] = $agg;
+				continue;
+			}
+			
 			if (empty($aggs)) {
-				$aggs = array($aggKey => $this->aggregates[$key]);
+				$aggs = array($aggKey => $agg);
 			}
 			else {
-				$agg = $this->aggregates[$key];
 				$agg['aggs'] = $aggs;
 				$aggs = array($aggKey => $agg);
 			}

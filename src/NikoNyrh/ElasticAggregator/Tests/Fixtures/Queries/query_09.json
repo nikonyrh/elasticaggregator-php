@@ -1,0 +1,89 @@
+{
+	"name":    "many_metrics",
+	"response": {
+		"took": 1437,
+		"timed_out": false,
+		"_shards": {
+			"total": 2,
+			"successful": 2,
+			"failed": 0
+		},
+		"hits": {
+			"total": 7242402,
+			"max_score": 0,
+			"hits": []
+		},
+		"aggregations": {
+			"ticket_date_agg": {
+				"buckets": [
+					{
+						"key_as_string": "2014-03-27",
+						"key": 1395878400000,
+						"doc_count": 209209,
+						"value_metric_1": {
+							"count": 209209,
+							"min": 2,
+							"max": 14912,
+							"avg": 203,
+							"sum": 42659058
+						},
+						"value_metric_2": {
+							"values": {
+								"25.0": 52,
+								"50.0": 108,
+								"75.0": 235
+							}
+						}
+					},
+					{
+						"key_as_string": "2014-04-03",
+						"key": 1396483200000,
+						"doc_count": 577507,
+						"value_metric_1": {
+							"count": 577507,
+							"min": 1,
+							"max": 70976,
+							"avg": 199,
+							"sum": 115500953
+						},
+						"value_metric_2": {
+							"values": {
+								"25.0": 50,
+								"50.0": 106,
+								"75.0": 230
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"expected": {
+		"2014-03-27 00:00:00": {
+			"value": [{
+				"count": 209209,
+				"min": 2,
+				"max": 14912,
+				"avg": 203,
+				"sum": 42659058
+			},{
+				"25.0": 52,
+				"50.0": 108,
+				"75.0": 235
+			}]
+		},
+		"2014-04-03 00:00:00": {
+			"value": [{
+				"count": 577507,
+				"min": 1,
+				"max": 70976,
+				"avg": 199,
+				"sum": 115500953
+			},{
+				"25.0": 50,
+				"50.0": 106,
+				"75.0": 230
+			}]
+		}
+	}
+}

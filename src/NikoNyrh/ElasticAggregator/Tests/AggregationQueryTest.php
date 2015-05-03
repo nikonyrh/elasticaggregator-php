@@ -92,7 +92,6 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 						"histogram": {
 							"field": "post_length",
 							"interval": 25,
-							"min_doc_count": 0,
 							"extended_bounds": {
 								"min": 0,
 								"max": 250
@@ -378,6 +377,94 @@ class AggregationQueryTest extends \PHPUnit_Framework_TestCase
 									"prefix": {
 										"link.url": "www.google.com/"
 									}
+								}
+							}
+						}
+					}
+				}
+			}
+		'), $this->decode($result));
+	}
+	
+	public function testAggregation_aggregationWithMetric()
+	{
+		$result = $this->query()
+			->aggregate('terms', array('field' => 'level1', 'size' => 10))
+			->metric('cardinality', array(
+				'field'               => 'user_id',
+				'precision_threshold' => 100
+			))
+			->aggregate('terms', array('field' => 'level2', 'size' => 10))
+			->buildBody();
+		
+		$this->assertEquals($this->decode('
+			{
+				"size": 0,
+				"aggs": {
+					"level1_agg": {
+						"terms": {
+							"field": "level1",
+							"size": 10
+						},
+						"aggs": {
+							"user_id_metric": {
+								"cardinality": {
+									"field": "user_id",
+									"precision_threshold": 100
+								}
+							},
+							"level2_agg": {
+								"terms": {
+									"field": "level2",
+									"size": 10
+								}
+							}
+						}
+					}
+				}
+			}
+		'), $this->decode($result));
+	}
+	
+	public function testAggregation_aggregationWithMetrics()
+	{
+		$result = $this->query()
+			->aggregate('date_histogram', array(
+				'field'    => 'ticket_date',
+				'interval' => '7d'
+			))
+			->metric('stats', array(
+				'field' => 'value'
+			))
+			->metric('percentiles', array(
+				'field'    => 'value',
+				'percents' => array(
+					25, 50, 75
+				)
+			))
+			->buildBody();
+		
+		$this->assertEquals($this->decode('
+			{
+				"size": 0,
+				"aggs": {
+					"ticket_date_agg": {
+						"date_histogram": {
+							"field": "ticket_date",
+							"interval": "7d"
+						},
+						"aggs": {
+							"value_metric_1": {
+								"stats": {
+									"field": "value"
+								}
+							},
+							"value_metric_2": {
+								"percentiles": {
+									"field": "value",
+									"percents": [
+										25, 50, 75
+									]
 								}
 							}
 						}

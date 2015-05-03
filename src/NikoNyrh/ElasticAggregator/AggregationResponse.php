@@ -22,7 +22,7 @@ class AggregationResponse
 		return $this;
 	}
 	
-	public function exec($query, $type, $config = array())
+	public function exec($query, $type, $config=array())
 	{
 		$hasFlag = function ($key) use ($config) {
 			return
@@ -52,6 +52,10 @@ class AggregationResponse
 			else {
 				$search['body']['query'] = $config['query'];
 				$search['body']['size']  = 0;
+			}
+			
+			if (isset($config['query']['sort'])) {
+				$search['body']['sort'] = $config['query']['sort'];
 			}
 			
 			if (isset($config['query']['highlight'])) {
@@ -93,6 +97,10 @@ class AggregationResponse
 		$removeKeysToSkip($response);
 		
 		$parse = function ($response) use (&$parse) {
+			if (!is_array($response)) {
+				return $response;
+			}
+			
 			if (sizeof($response) == 1) {
 				$key = array_keys($response);
 				$key = $key[0];
@@ -112,9 +120,17 @@ class AggregationResponse
 								isset($bucket['key_as_string']) &&
 								is_int($resultKey) && ($resultKey % 1000) == 0
 							) {
-								$resultKey = (new \DateTime(
+								$asDate = (new \DateTime(
 									'@' . ($resultKey/1000)
 								))->format('Y-m-d H:i:s');
+								
+								if ($resultKey < 24*60*60*1000) {
+									$asDate = explode(' ', $asDate);
+									$resultKey = $asDate[1];
+								}
+								else {
+									$resultKey = $asDate;
+								}
 							}
 							
 							unset($bucket['key']);
@@ -147,6 +163,19 @@ class AggregationResponse
 					
 					unset($response[$key]['doc_count']);
 					return $parse($response[$key]);
+				}
+				elseif (
+					$key == 'values'
+				) {
+					// Presumably from percentiles aggregation
+					return $response[$key];
+				}
+				elseif (
+					sizeof($response[$key]) == 1 &&
+					isset($response[$key]['values'])
+				) {
+					// Presumably from percentiles aggregation
+					return $response[$key]['values'];
 				}
 				else {
 					self::debug(sprintf(
@@ -184,8 +213,27 @@ class AggregationResponse
 			}
 			
 			$result = array();
+			
 			foreach ($response as $key => $value) {
-				$result[preg_replace('/_stats$/', '', $key)] = $value;
+				if (preg_match('/_agg$/', $key)) {
+					$parsed = $parse(array($key => $value));
+				}
+				else {
+					$parsed = $parse($value);
+				}
+				
+				$resultKey = preg_replace('/_(stats|metric|agg)(_[0-9]+)?$/', '', $key);
+				
+				if (!isset($result[$resultKey])) {
+					$result[$resultKey] = $parsed;
+				}
+				else {
+					if (!isset($result[$resultKey][0])) {
+						$result[$resultKey] = array($result[$resultKey]);
+					}
+					
+					$result[$resultKey][] = $parsed;
+				}
 			}
 			
 			return $result;
@@ -197,9 +245,7 @@ class AggregationResponse
 		
 		self::debug(sprintf("Result: %s\n", print_r($result, true)));
 		
-		$object2array = isset($config['object2array']) && $config['object2array'];
-		
-		if ($object2array) {
+		if ($hasFlag('object2array')) {
 			$result = $this->object2array($result);
 		}
 		

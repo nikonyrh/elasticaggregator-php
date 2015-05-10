@@ -165,10 +165,15 @@ class AggregationResponse
 					return $parse($response[$key]);
 				}
 				elseif (
-					$key == 'values'
+					$key == 'values' || // from percentiles aggregation
+					$key == 'value'  || // from sum aggregation
+					( // can also be nested aggregation
+						preg_match('/\.value[s]?/', $key) &&
+						is_array($response[$key]) &&
+						sizeof($response[$key]) == 1
+					)
 				) {
-					// Presumably from percentiles aggregation
-					return $response[$key];
+					return $parse($response[$key]);
 				}
 				elseif (
 					sizeof($response[$key]) == 1 &&
@@ -223,6 +228,10 @@ class AggregationResponse
 				}
 				
 				$resultKey = preg_replace('/_(stats|metric|agg)(_[0-9]+)?$/', '', $key);
+				
+				if ($resultKey == '_parent') {
+					$resultKey = 'parent';
+				}
 				
 				if (!isset($result[$resultKey])) {
 					$result[$resultKey] = $parsed;

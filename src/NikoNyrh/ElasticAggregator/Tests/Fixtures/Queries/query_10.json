@@ -1,0 +1,291 @@
+{
+	"name":    "many_metrics_and_nested_elements",
+	"response": {
+		"took": 2816,
+		"timed_out": false,
+		"_shards": {
+			"total": 2,
+			"successful": 2,
+			"failed": 0
+		},
+		"hits": {
+			"total": 1152655,
+			"max_score": 0,
+			"hits": []
+		},
+		"aggregations": {
+			"level2_agg": {
+				"doc_count": 3870535,
+				"level2.code_agg": {
+					"doc_count_error_upper_bound": 0,
+					"sum_other_doc_count": 2536734,
+					"buckets": [
+						{
+							"key": "4380367",
+							"doc_count": 476101,
+							"level2.value_metric": {
+								"value": 19176723
+							},
+							"_parent": {
+								"doc_count": 476101,
+								"level3_agg": {
+									"doc_count": 2923795,
+									"level3.code_agg": {
+										"doc_count_error_upper_bound": -1,
+										"sum_other_doc_count": 2429763,
+										"buckets": [
+											{
+												"key": "4380431",
+												"doc_count": 191841,
+												"level3.value_metric": {
+													"value": 4873652
+												}
+											},
+											{
+												"key": "4380619",
+												"doc_count": 62347,
+												"level3.value_metric": {
+													"value": 4790773
+												}
+											},
+											{
+												"key": "4380437",
+												"doc_count": 239844,
+												"level3.value_metric": {
+													"value": 4264880
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						{
+							"key": "4380362",
+							"doc_count": 445991,
+							"level2.value_metric": {
+								"value": 13473003
+							},
+							"_parent": {
+								"doc_count": 445991,
+								"level3_agg": {
+									"doc_count": 2175721,
+									"level3.code_agg": {
+										"doc_count_error_upper_bound": -1,
+										"sum_other_doc_count": 1831801,
+										"buckets": [
+											{
+												"key": "4380397",
+												"doc_count": 249377,
+												"level3.value_metric": {
+													"value": 7215806
+												}
+											},
+											{
+												"key": "4380619",
+												"doc_count": 30386,
+												"level3.value_metric": {
+													"value": 2377978
+												}
+											},
+											{
+												"key": "4380404",
+												"doc_count": 64157,
+												"level3.value_metric": {
+													"value": 2259924
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						{
+							"key": "4380361",
+							"doc_count": 75433,
+							"level2.value_metric": {
+								"value": 11120956
+							},
+							"_parent": {
+								"doc_count": 75433,
+								"level3_agg": {
+									"doc_count": 399289,
+									"level3.code_agg": {
+										"doc_count_error_upper_bound": -1,
+										"sum_other_doc_count": 341955,
+										"buckets": [
+											{
+												"key": "4380379",
+												"doc_count": 32904,
+												"level3.value_metric": {
+													"value": 2900745
+												}
+											},
+											{
+												"key": "4381207",
+												"doc_count": 18225,
+												"level3.value_metric": {
+													"value": 2453521
+												}
+											},
+											{
+												"key": "4380387",
+												"doc_count": 6205,
+												"level3.value_metric": {
+													"value": 1517662
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						{
+							"key": "4380363",
+							"doc_count": 135598,
+							"level2.value_metric": {
+								"value": 10134210
+							},
+							"_parent": {
+								"doc_count": 135598,
+								"level3_agg": {
+									"doc_count": 974759,
+									"level3.code_agg": {
+										"doc_count_error_upper_bound": -1,
+										"sum_other_doc_count": 818213,
+										"buckets": [
+											{
+												"key": "4380619",
+												"doc_count": 96389,
+												"level3.value_metric": {
+													"value": 7265510
+												}
+											},
+											{
+												"key": "4380460",
+												"doc_count": 41230,
+												"level3.value_metric": {
+													"value": 2068414
+												}
+											},
+											{
+												"key": "4380467",
+												"doc_count": 18927,
+												"level3.value_metric": {
+													"value": 1199343
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						{
+							"key": "4381292",
+							"doc_count": 200678,
+							"level2.value_metric": {
+								"value": 10036764
+							},
+							"_parent": {
+								"doc_count": 200678,
+								"level3_agg": {
+									"doc_count": 1461249,
+									"level3.code_agg": {
+										"doc_count_error_upper_bound": -1,
+										"sum_other_doc_count": 1240948,
+										"buckets": [
+											{
+												"key": "4381305",
+												"doc_count": 69276,
+												"level3.value_metric": {
+													"value": 3576628
+												}
+											},
+											{
+												"key": "4381293",
+												"doc_count": 87402,
+												"level3.value_metric": {
+													"value": 3405407
+												}
+											},
+											{
+												"key": "4381133",
+												"doc_count": 63623,
+												"level3.value_metric": {
+													"value": 2026623
+												}
+											}
+										]
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			"value_metric": {
+				"value": 156902207
+			}
+		}
+	},
+	"expected": {
+		"level2": {
+			"4380367": {
+				"level2.value": 19176723,
+				"parent": {
+					"doc_count": 476101,
+					"level3": {
+						"4380431": 4873652,
+						"4380619": 4790773,
+						"4380437": 4264880
+					}
+				}
+			},
+			"4380362": {
+				"level2.value": 13473003,
+				"parent": {
+					"doc_count": 445991,
+					"level3": {
+						"4380397": 7215806,
+						"4380619": 2377978,
+						"4380404": 2259924
+					}
+				}
+			},
+			"4380361": {
+				"level2.value": 11120956,
+				"parent": {
+					"doc_count": 75433,
+					"level3": {
+						"4380379": 2900745,
+						"4381207": 2453521,
+						"4380387": 1517662
+					}
+				}
+			},
+			"4380363": {
+				"level2.value": 10134210,
+				"parent": {
+					"doc_count": 135598,
+					"level3": {
+						"4380619": 7265510,
+						"4380460": 2068414,
+						"4380467": 1199343
+					}
+				}
+			},
+			"4381292": {
+				"level2.value": 10036764,
+				"parent": {
+					"doc_count": 200678,
+					"level3": {
+						"4381305": 3576628,
+						"4381293": 3405407,
+						"4381133": 2026623
+					}
+				}
+			}
+		},
+		"value": 156902207
+	}
+}

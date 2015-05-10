@@ -8,9 +8,11 @@ class AggregationResponseTest extends \PHPUnit_Framework_TestCase
 	public static function setUpBeforeClass()
 	{
 		self::$testData = array();
-		$glob = __DIR__ . '/Fixtures/Queries/*.json';
+		$glob   = __DIR__ . '/Fixtures/Queries/*.json';
+		$fnames = glob($glob);
+		sort($fnames);
 		
-		foreach (glob($glob) as $fname) {
+		foreach ($fnames as $fname) {
 			self::$testData[$fname] = json_decode(
 				file_get_contents($fname),
 				true
